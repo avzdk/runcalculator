@@ -59,6 +59,13 @@ class Run(BaseModel):
     @property
     def tempo(self) -> timedelta:
         return self.duration/self.distance
+    
+    @property
+    def intervalsTxt(self) -> str:
+        return "\n".join([str(i) for i in self.intervals])
+    
+    def __str__(self) -> str:
+        return f"Distance: {self.distance:.1f} km\nVarighed: {self.duration}\nTempo: {str(self.tempo)[-4:]}\n\n{self.intervalsTxt}"
 
 def calculate(event): 
     inputtxt = document.querySelector("#inputtxt")
@@ -74,4 +81,5 @@ def calculate(event):
     print(run.distance)
     print(run.tempo)
     output_div = document.querySelector("#output")
-    output_div.innerText = "Test"
+    text=str(run)
+    output_div.innerText = text
