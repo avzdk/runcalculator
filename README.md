@@ -1,6 +1,6 @@
 # Run Calculator
 
-Kan tage en liste over løbeintervaller og beregne samlet længde, tid og gennemsnits temp  
+Kan tage en liste over løbeintervaller og beregne samlet længde, tid og gennemsnits tempo  
 
 
 Eks.  
