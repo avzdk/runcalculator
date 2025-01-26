@@ -43,10 +43,22 @@ class RunInterval(BaseModel):
         return self
 
     def __str__(self) -> str:
-        return f"{self.distance} km @ {self.tempo} min/km = {self.duration} min"
+        return f"{self.distance:.1f} @ {str(self.tempo)[-4:]} = {self.duration} min"
     
 class Run(BaseModel):
     intervals: Optional[List[RunInterval]] = []
+
+    @property
+    def duration(self) -> timedelta:
+        return sum([i.duration for i in self.intervals],timedelta())
+    
+    @property
+    def distance(self) -> float:
+        return sum([i.distance for i in self.intervals])
+
+    @property
+    def tempo(self) -> timedelta:
+        return self.duration/self.distance
 
 def calculate(event): 
     inputtxt = document.querySelector("#inputtxt")
@@ -57,7 +69,9 @@ def calculate(event):
         interval=RunInterval()
         interval.parse(i)
         run.intervals.append(interval)    
-        print(interval)
-
+        
+    print(run.duration)
+    print(run.distance)
+    print(run.tempo)
     output_div = document.querySelector("#output")
     output_div.innerText = "Test"
