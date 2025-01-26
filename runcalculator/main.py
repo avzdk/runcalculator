@@ -1,52 +1,49 @@
 from pyscript import document
 from typing import Optional, List
 from pydantic import BaseModel
-import datetime
+from datetime import timedelta
 
-def minute_txt2flow(minuteTxt: str) -> float:
+def txt2time(minuteTxt: str) -> timedelta:
     # minuteTxt is in the format "mm:ss" 
 
     minutes=int(minuteTxt.split(":")[0])
     seconds=int(minuteTxt.split(":")[1])
-    return minutes + seconds/60
-
-def convert_minutes2time(minutes: float) -> datetime.time:
-    hours = int(minutes // 60)
-    minutes = int(minutes % 60)
-    return datetime.time(hours, minutes)
+    return timedelta(minutes=minutes,seconds=seconds)
 
 class RunInterval(BaseModel):
-    tempo: Optional[float] = None# in minutes per kilometer
+    tempo: Optional[timedelta] = None# in minutes per kilometer
     distance: Optional[float] = None # in kilometers
 
-    def set_duration(self, duration: float):
+    def set_duration(self, duration: timedelta):
         if self.tempo is not None:
-            self.distance=duration/tempo
+            self.distance=duration/self.tempo
         elif self.distance is not None:
-            self.tempo=duration/distance
+            self.tempo=duration/self.distance
         else:
             raise Exception("Hverken tempo eller distance er givet!")
     
     @property
-    def duration(self):
-        return self.distance / self.tempo
+    def duration(self) -> timedelta:
+        tempo_minutes=self.tempo.total_seconds()/60
+        return timedelta(minutes=tempo_minutes*self.distance)
+        
     
     def parse(self,intervalTxt: str) -> 'RunInterval':
         parts = intervalTxt.split("@")
         if "km" in parts[0]:
             self.distance=float(parts[0].replace("km",""))
             if "min" in parts[1]:
-                self.set_duration=minute_txt2flow(parts[1].replace("min",""))
+                self.set_duration(txt2time(parts[1].replace("min","")))
             else:
-                self.tempo=minute_txt2flow(parts[1])
+                self.tempo=txt2time(parts[1])
         elif "min" in parts[0]:
-            self.tempo=minute_txt2flow(parts[1])
-            self.set_duration=minute_txt2flow(parts[0].replace("min",""))
+            self.tempo=txt2time(parts[1])
+            self.set_duration(txt2time(parts[0].replace("min","")))
         
         return self
 
     def __str__(self) -> str:
-        return f"{self.distance} km @ {self.tempo} min/km"
+        return f"{self.distance} km @ {self.tempo} min/km = {self.duration} min"
     
 class Run(BaseModel):
     intervals: Optional[List[RunInterval]] = []
