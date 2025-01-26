@@ -51,10 +51,7 @@ class RunInterval(BaseModel):
 class Run(BaseModel):
     intervals: Optional[List[RunInterval]] = []
 
-
-
-
-def mymain(event): 
+def calculate(event): 
     inputtxt = document.querySelector("#inputtxt")
     intervalstxt = inputtxt.value.split('\n')
     run=Run()
