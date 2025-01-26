@@ -12,19 +12,18 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 </head>
 <body class="container">
-    <h1 class="text-center">Løb-beregner</h1>
-    <p class="text-center">This is a simple calculator for your running needs.</p>
-
+    <h1 class="text-center">Løbetursberegner</h1>
+    
     <form>
         <div class="input-group">
-            <textarea  id="inputtxt" class="form-control" aria-label="With textarea" >4km@5:30
-4km@5:30
-4km@5:30</textarea>
+            <textarea  id="inputtxt" class="form-control" rows="10" aria-label="With textarea" >4.6km@5:30
+12:00min@5:30
+4km@22:00min </textarea>
         </div>
         <button py-click="calculate" type="button" class="btn btn-primary">Beregn</button>
     </form>
 
-    <div id="output" class="text-center mb-3">d</div>
+    <div id="output" class="text-center mb-3"></div>
  
 
     <script type="py" src="./main.py" config="./pyscript.json"></script>
