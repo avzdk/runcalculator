@@ -54,7 +54,7 @@ class RunInterval(BaseModel):
         return self
 
     def __str__(self) -> str:
-        txt=f"{self.distance:.1f} @ {timedelta2txt(self.tempo)} = {timedelta2txt(self.duration)}"
+        txt=f"{self.distance:.1f} @ {timedelta2txt(self.tempo)[-4:]} = {timedelta2txt(self.duration)}"
 
 
         return txt
