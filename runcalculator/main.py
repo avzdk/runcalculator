@@ -3,12 +3,23 @@ from typing import Optional, List
 from pydantic import BaseModel
 from datetime import timedelta
 
-def txt2time(minuteTxt: str) -> timedelta:
+def txt2time(timeTxt: str) -> timedelta:
     # minuteTxt is in the format "mm:ss" 
+    splittxt=timeTxt.split(":")
+    if len(splittxt)==2:
+        minutes=int(splittxt[0])
+        seconds=int(splittxt[1])
+        return timedelta(minutes=minutes,seconds=seconds)
+    else:
+        hours=int(splittxt[0])
+        minutes=int(splittxt[1])
+        seconds=int(splittxt[2])
+        return timedelta(hours=hours,minutes=minutes,seconds=seconds)
 
-    minutes=int(minuteTxt.split(":")[0])
-    seconds=int(minuteTxt.split(":")[1])
-    return timedelta(minutes=minutes,seconds=seconds)
+def timedelta2txt(duration: timedelta) -> str:
+    hours, remainder = divmod(duration.total_seconds(), 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
 
 class RunInterval(BaseModel):
     tempo: Optional[timedelta] = None# in minutes per kilometer
@@ -43,7 +54,10 @@ class RunInterval(BaseModel):
         return self
 
     def __str__(self) -> str:
-        return f"{self.distance:.1f} @ {str(self.tempo)[-4:]} = {self.duration} min"
+        txt=f"{self.distance:.1f} @ {timedelta2txt(self.tempo)} = {timedelta2txt(self.duration)}"
+
+
+        return txt
     
 class Run(BaseModel):
     intervals: Optional[List[RunInterval]] = []
@@ -65,21 +79,18 @@ class Run(BaseModel):
         return "\n".join([str(i) for i in self.intervals])
     
     def __str__(self) -> str:
-        return f"Distance: {self.distance:.1f} km\nVarighed: {self.duration}\nTempo: {str(self.tempo)[-4:]}\n\n{self.intervalsTxt}"
+        return f"Distance: {self.distance:.1f} km\nVarighed: {self.duration}\nTempo: {str(self.tempo)}\n\n{self.intervalsTxt}"
 
 def calculate(event): 
     inputtxt = document.querySelector("#inputtxt")
     intervalstxt = inputtxt.value.split('\n')
     run=Run()
-    print(intervalstxt)
     for i in intervalstxt:
-        interval=RunInterval()
-        interval.parse(i)
-        run.intervals.append(interval)    
+        if "@" in i:    
+            interval=RunInterval()
+            interval.parse(i)
+            run.intervals.append(interval)    
         
-    print(run.duration)
-    print(run.distance)
-    print(run.tempo)
     output_div = document.querySelector("#output")
     text=str(run)
     output_div.innerText = text
